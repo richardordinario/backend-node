@@ -1,4 +1,5 @@
 import express from 'express'
+import middleware from '../middleware/route.middleware.js'
 import {
   index,
   create
@@ -6,7 +7,7 @@ import {
 
 const router = express.Router()
 
-router.get('/', index)
-router.post('/create', create)
+router.get('/', middleware, index)
+router.post('/create', middleware, create)
 
 export default router

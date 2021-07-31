@@ -4,18 +4,18 @@ import bcrypt from 'bcrypt'
 const schema = new mongoose.Schema({
   name: { type: String, required: true, trim: true, lowercase: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, expose: false },
 })
 
 schema.set('timestamps', true)
 
-schema.pre('save', async function (next){
+schema.pre('save', async function (next) {
   try {
     const salt = await bcrypt.genSalt(10)
     const hashed = await bcrypt.hash(this.password, salt)
     this.password = hashed
     next()
-  } catch(error) {
+  } catch (error) {
     next(error)
   }
 })

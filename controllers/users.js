@@ -1,30 +1,28 @@
-import express from 'express'
+import formidable from 'formidable'
 import formatError from 'mongoose-error-formatter'
 
-import Users from '../models/users.js'
-
-const router = express.Router()
+import User from '../models/user.js'
 
 export const index = async (req, res) => {
   try {
-    const users = await Users.find()
-
+    const users = await User.find()
+    console.log(req.user)
     res.status(200).json(users)
   } catch (error) {
     res.status(404).json({ message: error.message })
   }
 }
 
-export const create = async (req, res) => {
+export const create = async (req, res, next) => {
 
-  const newUsers = new Users({
+  const newUser = new User({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
   })
 
   try {
-    await newUsers.save()
+    await newUser.save()
     res.status(201).json('User Created')
 
   } catch (error) {
@@ -32,4 +30,17 @@ export const create = async (req, res) => {
     console.log(formattedMessage)
     res.status(404).json({ message: error.message.errors })
   }
+}
+
+export const file = async (req, res, next) => {
+  const form = formidable({ multiples: true })
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      next(err)
+      return
+    }
+
+    res.json({ fields, files })
+  })
 }
